@@ -1,0 +1,26 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaConnect
+metadata:
+  name: my-connect-cluster
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  version: 2.4.0
+  replicas: 1
+  bootstrapServers: <replace-with-eventhubs-namespace>.servicebus.windows.net:9093
+  config:
+    group.id: connect-cluster
+    offset.storage.topic: strimzi-connect-cluster-offsets
+    config.storage.topic: strimzi-connect-cluster-configs
+    status.storage.topic: strimzi-connect-cluster-status
+  authentication:
+    type: plain
+    username: $ConnectionString
+    passwordSecret:
+      secretName: eventhubssecret
+      password: eventhubspassword
+  tls:
+    trustedCertificates: []
+  logging:
+    type: external
+    name: connect-logging-configmap
